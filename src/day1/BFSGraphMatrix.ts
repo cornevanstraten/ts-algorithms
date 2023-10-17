@@ -1,3 +1,44 @@
-export default function bfs(graph: WeightedAdjacencyMatrix, source: number, needle: number): number[] | null {
+export default function bfs(
+    graph: WeightedAdjacencyMatrix,
+    source: number,
+    needle: number,
+): number[] | null {
+    const seen = new Array(graph.length).fill(false);
+    const prev = new Array(graph.length).fill(-1);
 
+    seen[source] = true;
+    const q: number[] = [source];
+
+    do {
+        const curr = q.shift() as number;
+        if (curr === needle) {
+            break;
+        }
+
+        const adjs = graph[curr];
+        for (let i = 0; i < adjs.length; i++) {
+            if (adjs[i] === 0 || seen[i]) {
+                continue;
+            }
+            seen[i] = true; //mark as seen
+            prev[i] = curr; //mark from whence it came
+            q.push(i); //push into queue
+        }
+    } while (q.length);
+
+    if (prev[needle] === -1) {
+        //no path, because not found
+        return null;
+    }
+
+    //build it backwards
+    let curr = needle; //
+    const out: number[] = []; //path through the graph
+
+    while (prev[curr] !== -1) {
+        out.push(curr);
+        curr = prev[curr];
+    }
+
+    return [source].concat(out.reverse());
 }
